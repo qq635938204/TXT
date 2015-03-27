@@ -8,6 +8,12 @@
 #include "TXTDlg.h"
 #include "afxdialogex.h"
 #include <tchar.h>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <list>
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,6 +52,7 @@ void CTXTDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT1, m_csFileName);
 	DDX_Control(pDX, IDC_EDIT1, m_output);
 	DDX_Control(pDX, IDC_BUTTON_START, m_start);
+	DDX_Control(pDX, IDC_BUTTON_TEST, m_Test);
 }
 
 BEGIN_MESSAGE_MAP(CTXTDlg, CDialogEx)
@@ -53,6 +60,7 @@ BEGIN_MESSAGE_MAP(CTXTDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_START, &CTXTDlg::OnBnClickedButtonStart)
 	ON_COMMAND(IDCLOSE, &CTXTDlg::OnIdclose)
+	ON_BN_CLICKED(IDC_BUTTON_TEST, &CTXTDlg::OnBnClickedButtonTest)
 END_MESSAGE_MAP()
 
 
@@ -342,4 +350,34 @@ void CTXTDlg::Stop()
 		TerminateThread(m_hMain, 0);
 	CloseHandle(m_hMain);
 	m_hMain = NULL;
+}
+
+
+void CTXTDlg::OnBnClickedButtonTest()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	UpdateData();
+	CStringArray csaText;
+	//csaText.SetSize(100000);
+	CString csText;
+	if (!m_csPath.IsEmpty())
+	{
+		DWORD dwTime(0);
+		dwTime = GetTickCount();
+		string text;
+		ifstream is;
+		char chPath[MAX_PATH] = { 0 };
+		WideCharToMultiByte(CP_ACP, 0, m_csPath.GetBuffer(), MAX_PATH, chPath, MAX_PATH, NULL, NULL);
+		is.open(chPath,std::ios_base::binary);
+		while (getline(is,text))
+		{
+			csText = text.c_str();
+			csaText.Add(csText);
+			//OutputDebugStringA(text.c_str());
+		}
+		dwTime = GetTickCount() - dwTime;
+		sprintf_s(chPath, MAX_PATH, "Load Time = [%d sec]\r\n", dwTime / 1000);
+		OutputDebugStringA(chPath);
+	}
+	
 }

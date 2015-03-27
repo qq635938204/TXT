@@ -46,4 +46,6 @@ public:
 	afx_msg void OnIdclose();
 	virtual void OnCancel();
 	void Stop();
+	afx_msg void OnBnClickedButtonTest();
+	CButton m_Test;
 };
